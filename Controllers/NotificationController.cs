@@ -6,7 +6,7 @@ namespace NotificationSystem.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("notifications")]
+[Route("api/v1/notifications")]
 public class NotificationController(INotificationService notificationService): ControllerBase
 {
     [HttpGet("user/{id:int}/page/{page:int}/page-size/{pageSize:int}")]
