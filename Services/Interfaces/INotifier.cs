@@ -4,5 +4,5 @@ namespace NotificationSystem.Services.Interfaces;
 
 public interface INotifier
 {
-    void Notify(Notification notification);
+    Task Notify(Notification notification, string deviceToken);
 }

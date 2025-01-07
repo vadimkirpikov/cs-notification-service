@@ -1,4 +1,5 @@
 using NotificationSystem.Models.Domain;
+using NotificationSystem.Models.Dto;
 using NotificationSystem.Repositories.Interfaces;
 using NotificationSystem.Services.Interfaces;
 
@@ -13,15 +14,20 @@ public class NotificationService(
     {
         var page = 1;
         const int pageSize = 500;
-        IEnumerable<int> subscribes;
+        IEnumerable<UserToNotifyDto> subscribes;
         do
         {
-            subscribes = await userService.GetSubscribersIdentifiers(userId, page, pageSize);
+            subscribes = await userService.GetSubscribers(userId, page, pageSize);
             page++;
-            var notifications = subscribes.Select(subId => new Notification
-                { PostId = postId, UserId = userId, Content = $"Новый пост от пользователя с id {userId}" }).ToList();
+            var notifications = new List<Notification>();
+            foreach (var subscriber in subscribes)
+            {
+                var notification = new Notification
+                    { PostId = postId, UserId = subscriber.Id, Content = $"Новый пост от пользователя с id {userId}" };
+                notifications.Add(notification);
+                await notifier.Notify(notification, subscriber.DeviceToken);
+            }
             await notificationRepository.BulkInsertAsync(notifications);
-            foreach (var notification in notifications) notifier.Notify(notification);
         } while (subscribes.Any());
     }
 

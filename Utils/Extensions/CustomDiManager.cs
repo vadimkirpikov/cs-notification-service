@@ -2,6 +2,7 @@
 
 using Confluent.Kafka;
 using NotificationSystem.HostedService;
+using NotificationSystem.Models.Domain;
 using NotificationSystem.Repositories.Implementations;
 using NotificationSystem.Repositories.Interfaces;
 using NotificationSystem.Services.Implementations;
@@ -13,6 +14,8 @@ public static class CustomDiManager
 {
     public static WebApplicationBuilder InjectDependencies(this WebApplicationBuilder builder)
     {
+        var fcm = builder.Configuration.GetSection("Fcm");
+        builder.Services.Configure<Fcm>(fcm);
         builder.Services.AddHttpClient("UserClient", client =>
             {
                 client.BaseAddress = new Uri(builder.Configuration["UserServiceUrl"]!);
